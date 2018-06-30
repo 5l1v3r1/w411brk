@@ -30,6 +30,7 @@ install_ss() {
     read -r encryption
 
     # write to config file
+    sed -i "s/1.1.1.1/$server_ip/g" /etc/shadowsocks-libev/ss_up.sh
     cat <<EOF >/etc/shadowsocks-libev/config.json
 {
     "server": "$server_ip",
