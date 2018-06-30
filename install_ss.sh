@@ -50,13 +50,15 @@ install_dot() {
     tar xvzpf dot.tgz
     cd ./dns-over-https || return
     make install
-    cp ./doh-client.conf /etc/dns-over-https
     cd ..
+    cp ./doh-client.conf /etc/dns-over-https
 }
 
 dns_config() {
     install_dot
     echo -e "$YELLOW[*] Configuring DNSOverHTTPS$END"
+    systemctl disable systemd-resolved
+    systemctl stop systemd-resolved
 
     # dnsmasq service
     apt-get install dnsmasq -y
