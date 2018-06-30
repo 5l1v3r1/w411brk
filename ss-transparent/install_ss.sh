@@ -77,7 +77,7 @@ main() {
     check_root
 
     git clone git@gitlab.com:jm33-m0/w411brk.git
-    cd w411brk || return
+    cd w411brk/ss-transparent || return
 
     # install ipset
     apt-get install ipset -y

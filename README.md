@@ -1,6 +1,6 @@
 # w411brk
-some tools for gfw evading
+some tools for gfw evasion
 
-## install_ss.sh
+## ss-transparent
 
-install shadowsocks for tranparent proxy under Debian-based Linux
+install shadowsocks for tranparent proxy under Debian-based Linux, with Chinese IPs whitelisted
