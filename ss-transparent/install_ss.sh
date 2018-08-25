@@ -6,27 +6,75 @@ END='\033[0m'
 
 check_root() {
     if [ ! "$(id -u)" -eq 0 ]; then
-        echo -e "$RED[-] You must be root$END"
+        echo -e "$RED [-] You must be root$END"
         exit 1
     fi
 }
 
+get_pkgmgr() {
+    if [ -f /etc/os-release ]; then
+        # freedesktop.org and systemd
+        . /etc/os-release
+        OS=$NAME
+        VER=$VERSION_ID
+    elif type lsb_release >/dev/null 2>&1; then
+        # linuxbase.org
+        OS=$(lsb_release -si)
+        VER=$(lsb_release -sr)
+    elif [ -f /etc/lsb-release ]; then
+        # For some versions of Debian/Ubuntu without lsb_release command
+        . /etc/lsb-release
+        OS=$DISTRIB_ID
+        VER=$DISTRIB_RELEASE
+    elif [ -f /etc/debian_version ]; then
+        # Older Debian/Ubuntu/etc.
+        OS=Debian
+        VER=$(cat /etc/debian_version)
+    elif [ -f /etc/SuSe-release ]; then
+        # Older SuSE/etc.
+        OS="$RED [-] Old SuSE$END"
+    elif [ -f /etc/redhat-release ]; then
+        # Older Red Hat, CentOS, etc.
+        OS="$RED [-] Old RHEL$END"
+    else
+        # Fall back to uname, e.g. "Linux <version>", also works for BSD, etc.
+        OS=$(uname -s)
+        VER=$(uname -r)
+    fi
+
+    echo -e "[*] You are using $YELLOW $OS $VER $END"
+
+    if [ "$OS" = "Debian" ] || [ "$OS" = "Ubuntu" ]; then
+        INSTALL='apt-get install'
+    elif [ "$OS" = "Arch Linux" ]; then
+        INSTALL='pacman -S'
+    else
+        if which dnf >/dev/null 2>&1; then
+            INSTALL='dnf install'
+        elif which yum >/dev/null 2>&1; then
+            INSTALL='yum install'
+        fi
+    fi
+    export INSTALL
+    echo -e "[*] Using $YELLOW $INSTALL $END as package installer"
+}
+
 install_ss() {
-    echo -e "$YELLOW[*] Installing Shadowsocks$END"
-    apt-get install shadowsocks-libev -y
+    echo -e "$YELLOW [*] Installing Shadowsocks$END"
+    INSTALL shadowsocks-libev
     if [ ! -x "/usr/bin/ss-redir" ]; then
-        echo -e "$RED[-]Shadowsocks not installed$END"
+        echo -e "$RED [-]Shadowsocks not installed$END"
         exit 1
     fi
 
     # input your ss config
-    echo -ne "$YELLOW[?] Your shadowsocks server ip: $END"
+    echo -ne "$YELLOW [?] Your shadowsocks server ip: $END"
     read -r server_ip
-    echo -ne "$YELLOW[?] Your server port: $END"
+    echo -ne "$YELLOW [?] Your server port: $END"
     read -r server_port
-    echo -ne "$YELLOW[?] Your password: $END"
+    echo -ne "$YELLOW [?] Your password: $END"
     read -r pass
-    echo -ne "$YELLOW[?] Your encryption method: $END"
+    echo -ne "$YELLOW [?] Your encryption method: $END"
     read -r encryption
 
     # write to config file
@@ -46,7 +94,7 @@ EOF
 }
 
 install_dot() {
-    echo -e "$YELLOW[*] Installing DNSOverHTTPS$END"
+    echo -e "$YELLOW [*] Installing DNSOverHTTPS$END"
     tar xvzpf dot.tgz
     cd ./dns-over-https || return
     make install
@@ -56,15 +104,14 @@ install_dot() {
 
 dns_config() {
     install_dot
-    echo -e "$YELLOW[*] Configuring DNSOverHTTPS$END"
+    echo -e "$YELLOW [*] Configuring DNSOverHTTPS$END"
     systemctl disable systemd-resolved
     systemctl stop systemd-resolved
 
     # dnsmasq service
-    apt-get install dnsmasq -y
-    if ! grep "server=127.0.0.1#53535" /etc/dnsmasq.conf >/dev/null 2>&1; then
-        echo -e "server=127.0.0.1#53535" >>/etc/dnsmasq.conf
-    fi
+    INSTALL dnsmasq
+
+    cp -f ./dnsmasq.conf /etc
     systemctl enable dnsmasq.service
     systemctl restart dnsmasq.service
 
@@ -75,12 +122,13 @@ dns_config() {
 
 main() {
     check_root
+    get_pkgmgr
 
     git clone git@gitlab.com:jm33-m0/w411brk.git
     cd w411brk/ss-transparent || return
 
     # install ipset
-    apt-get install ipset -y
+    INSTALL ipset
 
     # ss config under /etc
     tar xvpf ss_config.tgz -C /
@@ -95,7 +143,7 @@ main() {
     dns_config
 
     # start service
-    echo -e "$YELLOW[*] Starting SS service$END"
+    echo -e "$YELLOW [*] Starting SS service$END"
     systemctl start ss-redir@config.service
     systemctl enable ss-redir@config.service
 }
