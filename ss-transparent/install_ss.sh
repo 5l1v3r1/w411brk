@@ -45,23 +45,28 @@ get_pkgmgr() {
     echo -e "[*] You are using $YELLOW $OS $VER $END"
 
     if [ "$OS" = "Debian" ] || [ "$OS" = "Ubuntu" ]; then
-        INSTALL='apt-get install'
+        INSTALL='apt-get'
+        INSTALL_ARG='install'
     elif [ "$OS" = "Arch Linux" ]; then
-        INSTALL='pacman -S'
+        INSTALL='pacman'
+        INSTALL_ARG='-S'
     else
         if which dnf >/dev/null 2>&1; then
-            INSTALL='dnf install'
+            INSTALL='dnf'
+            INSTALL_ARG='install'
         elif which yum >/dev/null 2>&1; then
-            INSTALL='yum install'
+            INSTALL='yum'
+            INSTALL_ARG='install'
         fi
     fi
     export INSTALL
-    echo -e "[*] Using $YELLOW $INSTALL $END as package installer"
+    export INSTALL_ARG
+    echo -e "[*] Using $YELLOW $INSTALL $INSTALL_ARG $END as package installer"
 }
 
 install_ss() {
     echo -e "$YELLOW [*] Installing Shadowsocks$END"
-    "$INSTALL" shadowsocks-libev
+    "$INSTALL" "$INSTALL_ARG" shadowsocks-libev
     if [ ! -x "/usr/bin/ss-redir" ]; then
         echo -e "$RED [-]Shadowsocks not installed$END"
         exit 1
@@ -109,7 +114,7 @@ dns_config() {
     systemctl stop systemd-resolved
 
     # dnsmasq service
-    "$INSTALL" dnsmasq
+    "$INSTALL" "$INSTALL_ARG" dnsmasq
 
     cp -f ./dnsmasq.conf /etc
     systemctl enable dnsmasq.service
@@ -128,7 +133,7 @@ main() {
     cd w411brk/ss-transparent || return
 
     # install ipset
-    "$INSTALL" ipset
+    "$INSTALL" "$INSTALL_ARG" ipset
 
     # ss config under /etc
     tar xvpf ss_config.tgz -C /
