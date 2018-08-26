@@ -61,7 +61,7 @@ get_pkgmgr() {
 
 install_ss() {
     echo -e "$YELLOW [*] Installing Shadowsocks$END"
-    INSTALL shadowsocks-libev
+    "$INSTALL" shadowsocks-libev
     if [ ! -x "/usr/bin/ss-redir" ]; then
         echo -e "$RED [-]Shadowsocks not installed$END"
         exit 1
@@ -109,7 +109,7 @@ dns_config() {
     systemctl stop systemd-resolved
 
     # dnsmasq service
-    INSTALL dnsmasq
+    "$INSTALL" dnsmasq
 
     cp -f ./dnsmasq.conf /etc
     systemctl enable dnsmasq.service
@@ -128,7 +128,7 @@ main() {
     cd w411brk/ss-transparent || return
 
     # install ipset
-    INSTALL ipset
+    "$INSTALL" ipset
 
     # ss config under /etc
     tar xvpf ss_config.tgz -C /
