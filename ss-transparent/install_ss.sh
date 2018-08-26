@@ -66,7 +66,17 @@ get_pkgmgr() {
 
 install_ss() {
     echo -e "$YELLOW [*] Installing Shadowsocks$END"
+
+    # install for Fedora
+    if [ "$INSTALL" = "dnf" ]; then
+        su -c 'dnf copr enable librehat/shadowsocks'
+        su -c 'dnf update'
+        su -c 'dnf install shadowsocks-libev'
+    fi
+
     "$INSTALL" "$INSTALL_ARG" shadowsocks-libev
+
+    # check installation
     if [ ! -x "/usr/bin/ss-redir" ]; then
         echo -e "$RED [-]Shadowsocks not installed$END"
         exit 1
