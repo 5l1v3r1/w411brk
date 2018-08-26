@@ -124,7 +124,7 @@ main() {
     check_root
     get_pkgmgr
 
-    git clone git@gitlab.com:jm33-m0/w411brk.git
+    git clone https://github.com/jm33-m0/w411brk.git
     cd w411brk/ss-transparent || return
 
     # install ipset
