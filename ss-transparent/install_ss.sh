@@ -44,7 +44,7 @@ get_pkgmgr() {
 
     echo -e "[*] You are using $YELLOW $OS $VER $END"
 
-    if [ "$OS" = "Debian" ] || [ "$OS" = "Ubuntu" ]; then
+    if [ "$OS" = "Debian" ] || [ "$OS" = "Ubuntu" ] || [ "$OS" = "Kali GNU/Linux" ]; then
         INSTALL='apt-get'
         INSTALL_ARG='install'
     elif [ "$OS" = "Arch Linux" ]; then
