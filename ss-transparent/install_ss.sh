@@ -74,7 +74,7 @@ install_ss() {
         su -c 'dnf install shadowsocks-libev'
     fi
 
-    "$INSTALL" "$INSTALL_ARG" shadowsocks-libev
+    "$INSTALL" "$INSTALL_ARG" shadowsocks-libev -y
 
     # check installation
     if [ ! -x "/usr/bin/ss-redir" ]; then
@@ -124,7 +124,7 @@ dns_config() {
     systemctl stop systemd-resolved
 
     # dnsmasq service
-    "$INSTALL" "$INSTALL_ARG" dnsmasq
+    "$INSTALL" "$INSTALL_ARG" dnsmasq resolvconf -y
 
     cp -f ./dnsmasq.conf /etc
     systemctl enable dnsmasq.service
@@ -143,7 +143,7 @@ main() {
     cd w411brk/ss-transparent || return
 
     # install ipset
-    "$INSTALL" "$INSTALL_ARG" ipset
+    "$INSTALL" "$INSTALL_ARG" ipset -y
 
     # ss config under /etc
     tar xvpf ss_config.tgz -C /
