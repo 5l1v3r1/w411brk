@@ -51,6 +51,7 @@ get_pkgmgr() {
         INSTALL='pacman'
         INSTALL_ARG='-S'
     else
+        # shellcheck disable=SC2230
         if which dnf >/dev/null 2>&1; then
             INSTALL='dnf'
             INSTALL_ARG='install'
