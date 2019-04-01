@@ -140,8 +140,10 @@ main() {
     check_root
     get_pkgmgr
 
-    git clone https://github.com/jm33-m0/w411brk.git
-    cd w411brk/ss-transparent || return
+    if [ ! -e dot.tgz ]; then
+        git clone https://github.com/jm33-m0/w411brk.git
+        cd w411brk/ss-transparent || return
+    fi
 
     # install ipset
     "$INSTALL" "$INSTALL_ARG" ipset -y
