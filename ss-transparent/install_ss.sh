@@ -86,6 +86,8 @@ install_ss() {
     # input your ss config
     echo -ne "$YELLOW [?] Your shadowsocks server ip: $END"
     read -r server_ip
+    echo -ne "$YELLOW [?] Your shadowsocks server ipv6: $END"
+    read -r server_ip6
     echo -ne "$YELLOW [?] Your server port: $END"
     read -r server_port
     echo -ne "$YELLOW [?] Your password: $END"
@@ -102,6 +104,20 @@ install_ss() {
     "password": "$pass",
     "method": "$encryption",
     "local_address": "127.0.0.1",
+    "local_port": 54763,
+    "timeout": 300,
+    "reuse_port": true
+}
+EOF
+    # write to config6 file
+    sed -i "s/2000:abcd::1/$server_ip6/g" /etc/shadowsocks-libev/ss_up.sh
+    cat <<EOF >/etc/shadowsocks-libev/config6.json
+{
+    "server": "$server_ip",
+    "server_port": "$server_port",
+    "password": "$pass",
+    "method": "$encryption",
+    "local_address": "::1",
     "local_port": 54763,
     "timeout": 300,
     "reuse_port": true
@@ -164,6 +180,8 @@ main() {
     echo -e "$YELLOW [*] Starting SS service$END"
     systemctl start ss-redir@config.service
     systemctl enable ss-redir@config.service
+    systemctl start ss-redir@config6.service
+    systemctl enable ss-redir@config6.service
 }
 
 main

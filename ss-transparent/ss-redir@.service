@@ -22,7 +22,5 @@ ExecStartPre=/etc/shadowsocks-libev/ss_up.sh
 ExecStart=/usr/bin/ss-redir -c /etc/shadowsocks-libev/%i.json
 ExecStopPost=/etc/shadowsocks-libev/ss_down.sh
 
-
 [Install]
 WantedBy=multi-user.target
-
