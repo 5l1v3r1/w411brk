@@ -180,8 +180,8 @@ main() {
     echo -e "$YELLOW [*] Starting SS service$END"
     systemctl start ss-redir@config.service
     systemctl enable ss-redir@config.service
-    systemctl start ss-redir@config6.service
-    systemctl enable ss-redir@config6.service
+    systemctl start shadowsocks-libev-redir@config6.service
+    systemctl enable shadowsocks-libev-redir@config6.service
 }
 
 main
