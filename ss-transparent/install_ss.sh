@@ -23,6 +23,7 @@ get_pkgmgr() {
         VER=$(lsb_release -sr)
     elif [ -f /etc/lsb-release ]; then
         # For some versions of Debian/Ubuntu without lsb_release command
+        # shellcheck disable=SC1091
         . /etc/lsb-release
         OS=$DISTRIB_ID
         VER=$DISTRIB_RELEASE
@@ -44,7 +45,7 @@ get_pkgmgr() {
 
     echo -e "[*] You are using $YELLOW $OS $VER $END"
 
-    if [ "$OS" = "Debian" ] || [ "$OS" = "Ubuntu" ] || [ "$OS" = "Kali GNU/Linux" ]; then
+    if [ "$OS" = "Debian GNU/Linux" ] || [ "$OS" = "Ubuntu" ] || [ "$OS" = "Kali GNU/Linux" ]; then
         INSTALL='apt-get'
         INSTALL_ARG='install'
     elif [ "$OS" = "Arch Linux" ]; then
